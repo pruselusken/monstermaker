@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createMonster } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -78,13 +78,12 @@ export default function CreateMonsterPage() {
       skills: {},
     };
 
-    const { error } = await supabase.from('monsters').insert([monster]);
-
-    if (error) {
-      alert('Error creating monster: ' + error.message);
-      setLoading(false);
-    } else {
+    try {
+      await createMonster(monster);
       router.push('/monsters');
+    } catch (error) {
+      alert('Error creating monster: ' + (error as Error).message);
+      setLoading(false);
     }
   }
 
