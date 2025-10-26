@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { prisma } from '@/lib/prisma'
 import { Monster, Role } from '@/lib/types';
 import MonsterStatBlock from '@/components/MonsterStatBlock';
 import { applyRoleToMonster } from '@/lib/monsterUtils';
@@ -21,8 +21,8 @@ export default function MonstersPage() {
   async function loadData() {
     setLoading(true);
     const [monstersRes, rolesRes] = await Promise.all([
-      supabase.from('monsters').select('*').order('name'),
-      supabase.from('roles').select('*').order('name'),
+      prisma.monster.findMany({ orderBy: { name: 'asc' } }),
+      prisma.role.findMany({ orderBy: { name: 'asc' } })      
     ]);
 
     if (monstersRes.data) setMonsters(monstersRes.data);

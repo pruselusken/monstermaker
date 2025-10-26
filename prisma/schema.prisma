@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Monster {
+  id                     String            @id @default(uuid())
+  name                   String
+  size                   String
+  type                   String
+  alignment              String?
+  armor_class            Int               @map("armor_class")
+  hit_points             Int               @map("hit_points")
+  hit_dice               String            @map("hit_dice")
+  speed                  String            @db.NVarChar(Max) // JSON stored as string
+  str                    Int
+  dex                    Int
+  con                    Int
+  int                    Int
+  wis                    Int
+  cha                    Int
+  saving_throws          String            @map("saving_throws") @db.NVarChar(Max) // JSON
+  skills                 String            @db.NVarChar(Max) // JSON
+  damage_vulnerabilities String            @map("damage_vulnerabilities") @db.NVarChar(Max)
+  damage_resistances     String            @map("damage_resistances") @db.NVarChar(Max)
+  damage_immunities      String            @map("damage_immunities") @db.NVarChar(Max)
+  condition_immunities   String            @map("condition_immunities") @db.NVarChar(Max)
+  senses                 String            @db.NVarChar(Max)
+  languages              String            @db.NVarChar(Max)
+  challenge_rating       String            @map("challenge_rating")
+  experience_points      Int               @map("experience_points")
+  special_abilities      String            @map("special_abilities") @db.NVarChar(Max) // JSON
+  actions                String            @db.NVarChar(Max) // JSON
+  reactions              String            @db.NVarChar(Max) // JSON
+  legendary_actions      String            @map("legendary_actions") @db.NVarChar(Max) // JSON
+  description            String            @db.NVarChar(Max)
+  is_custom              Boolean           @map("is_custom") @default(false)
+  created_at             DateTime          @default(now()) @map("created_at")
+  updated_at             DateTime          @updatedAt @map("updated_at")
+  
+  variants               MonsterVariant[]
+
+  @@map("monsters")
+}
+
+model Role {
+  id                 String            @id @default(uuid())
+  name               String
+  description        String            @db.NVarChar(Max)
+  stat_modifiers     String            @map("stat_modifiers") @db.NVarChar(Max) // JSON
+  feature_additions  String            @map("feature_additions") @db.NVarChar(Max) // JSON
+  created_at         DateTime          @default(now()) @map("created_at")
+  
+  variants           MonsterVariant[]
+
+  @@map("roles")
+}
+
+model MonsterVariant {
+  id               String   @id @default(uuid())
+  base_monster_id  String   @map("base_monster_id")
+  role_id          String   @map("role_id")
+  custom_name      String?  @map("custom_name")
+  stat_overrides   String   @map("stat_overrides") @db.NVarChar(Max) // JSON
+  created_at       DateTime @default(now()) @map("created_at")
+  
+  base_monster     Monster  @relation(fields: [base_monster_id], references: [id], onDelete: Cascade)
+  role             Role     @relation(fields: [role_id], references: [id], onDelete: Cascade)
+
+  @@map("monster_variants")
+}
