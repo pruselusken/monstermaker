@@ -20,6 +20,9 @@ const config: sql.config = {
 let pool: sql.ConnectionPool | null = null;
 
 export async function getConnection(): Promise<sql.ConnectionPool> {
+  // console.log('Getting DB connection...');
+  // console.log('Current pool state:', pool);
+  // console.log('Using config:', config);
   if (!pool) {
     pool = await sql.connect(config);
   }

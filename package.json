@@ -5,11 +5,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "migrate": "node scripts/db_migrate.js",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.76.1",
+    "dotenv": "^17.2.3",
     "mssql": "^12.0.0",
     "next": "16.0.0",
     "react": "19.2.0",

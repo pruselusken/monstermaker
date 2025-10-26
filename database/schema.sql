@@ -39,8 +39,8 @@ BEGIN
         reactions NVARCHAR(MAX) DEFAULT '[]',
         legendary_actions NVARCHAR(MAX) DEFAULT '[]',
         description NVARCHAR(MAX) DEFAULT '',
-        is_custom BIT DEFAULT 1,
-        created_at DATETIME2 DEFAULT GETDATE(),
+        is_custom BIT NOT NULL DEFAULT 1,
+        created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
         updated_at DATETIME2 DEFAULT GETDATE()
     );
 END
