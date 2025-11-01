@@ -127,6 +127,12 @@ export default function MonstersPage() {
           <div className="lg:col-span-2">
             {displayMonster ? (
               <div>
+                <Link
+                  href={`/monsters/create?id=${displayMonster.id}`}
+                  className="bg-[#9c2b1b] text-white px-6 py-3 rounded hover:bg-[#7a2216] transition-colors font-semibold"
+                >
+                  Edit monster
+                </Link>
                 <MonsterStatBlock monster={displayMonster} />
                 {displayMonster.description && (
                   <div className="mt-6 bg-white rounded-lg shadow-md p-6 border-2 border-[#9c2b1b]">

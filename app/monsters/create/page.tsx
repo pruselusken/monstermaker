@@ -1,12 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createMonster } from '@/lib/api';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function CreateMonsterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams()
+  const monsterId = searchParams.get('id')
+
+
+
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -47,6 +52,16 @@ export default function CreateMonsterPage() {
     'Plant',
     'Undead',
   ];
+
+  useEffect(() => {
+    if (monsterId) {
+      // Fetch monster data if we're editing
+      fetch(`/api/monsters/${monsterId}`)
+        .then(res => res.json())
+        .then(data => setFormData(data))
+    }
+  }, [monsterId])
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -97,7 +112,9 @@ export default function CreateMonsterPage() {
           >
             ← Back to Monsters
           </Link>
-          <h1 className="text-4xl font-bold text-[#58180d] font-serif">Create New Monster</h1>
+          <h1 className="text-4xl font-bold text-[#58180d] font-serif">
+            {monsterId ? 'Edit Monster' : 'Create New Monster'}
+          </h1>
         </div>
 
         <form
