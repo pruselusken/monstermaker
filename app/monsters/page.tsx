@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { fetchMonsters, fetchRoles } from '@/lib/api';
 import { Monster, Role } from '@/lib/types';
 import MonsterStatBlock from '@/components/MonsterStatBlock';
 import { applyRoleToMonster } from '@/lib/monsterUtils';
@@ -20,13 +20,16 @@ export default function MonstersPage() {
 
   async function loadData() {
     setLoading(true);
-    const [monstersRes, rolesRes] = await Promise.all([
-      supabase.from('monsters').select('*').order('name'),
-      supabase.from('roles').select('*').order('name'),
-    ]);
-
-    if (monstersRes.data) setMonsters(monstersRes.data);
-    if (rolesRes.data) setRoles(rolesRes.data);
+    try {
+      const [monstersData, rolesData] = await Promise.all([
+        fetchMonsters(),
+        fetchRoles(),
+      ]);
+      setMonsters(monstersData);
+      setRoles(rolesData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
     setLoading(false);
   }
 
@@ -124,6 +127,12 @@ export default function MonstersPage() {
           <div className="lg:col-span-2">
             {displayMonster ? (
               <div>
+                <Link
+                  href={`/monsters/create?id=${displayMonster.id}`}
+                  className="bg-[#9c2b1b] text-white px-6 py-3 rounded hover:bg-[#7a2216] transition-colors font-semibold"
+                >
+                  Edit monster
+                </Link>
                 <MonsterStatBlock monster={displayMonster} />
                 {displayMonster.description && (
                   <div className="mt-6 bg-white rounded-lg shadow-md p-6 border-2 border-[#9c2b1b]">
