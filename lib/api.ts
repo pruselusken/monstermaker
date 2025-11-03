@@ -1,12 +1,7 @@
 import { Monster, Role } from './types';
 
-export async function fetchMonsters(): Promise<Monster[]> {
-  const response = await fetch('/api/monsters');
-  if (!response.ok) {
-    throw new Error('Failed to fetch monsters');
-  }
-  const data = await response.json();
-  return data.map((monster: any) => ({
+function parseMonsterData(monster: any): Monster {
+  return {
     ...monster,
     speed: typeof monster.speed === 'string' ? JSON.parse(monster.speed) : monster.speed,
     saving_throws: typeof monster.saving_throws === 'string' ? JSON.parse(monster.saving_throws) : monster.saving_throws,
@@ -15,10 +10,29 @@ export async function fetchMonsters(): Promise<Monster[]> {
     actions: typeof monster.actions === 'string' ? JSON.parse(monster.actions) : monster.actions,
     reactions: typeof monster.reactions === 'string' ? JSON.parse(monster.reactions) : monster.reactions,
     legendary_actions: typeof monster.legendary_actions === 'string' ? JSON.parse(monster.legendary_actions) : monster.legendary_actions,
-  }));
+    features: typeof monster.features === 'string' ? JSON.parse(monster.features) : monster.features,
+  };
 }
 
-export async function createMonster(monster: Partial<Monster>): Promise<Monster> {
+export async function fetchMonsters(): Promise<Monster[]> {
+  const response = await fetch('/api/monsters');
+  if (!response.ok) {
+    throw new Error('Failed to fetch monsters');
+  }
+  const data = await response.json();
+  return data.map(parseMonsterData);
+}
+
+export async function fetchMonster(id: number | string): Promise<Monster> {
+  const response = await fetch(`/api/monsters?id=${id}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch monster');
+  }
+  const data = await response.json();
+  return parseMonsterData(data);
+}
+
+export async function saveMonster(monster: Partial<Monster>): Promise<Monster> {
   const response = await fetch('/api/monsters', {
     method: 'POST',
     headers: {
@@ -28,20 +42,11 @@ export async function createMonster(monster: Partial<Monster>): Promise<Monster>
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create monster');
+    throw new Error('Failed to save monster');
   }
 
   const data = await response.json();
-  return {
-    ...data,
-    speed: typeof data.speed === 'string' ? JSON.parse(data.speed) : data.speed,
-    saving_throws: typeof data.saving_throws === 'string' ? JSON.parse(data.saving_throws) : data.saving_throws,
-    skills: typeof data.skills === 'string' ? JSON.parse(data.skills) : data.skills,
-    special_abilities: typeof data.special_abilities === 'string' ? JSON.parse(data.special_abilities) : data.special_abilities,
-    actions: typeof data.actions === 'string' ? JSON.parse(data.actions) : data.actions,
-    reactions: typeof data.reactions === 'string' ? JSON.parse(data.reactions) : data.reactions,
-    legendary_actions: typeof data.legendary_actions === 'string' ? JSON.parse(data.legendary_actions) : data.legendary_actions,
-  };
+  return parseMonsterData(data);
 }
 
 export async function fetchRoles(): Promise<Role[]> {

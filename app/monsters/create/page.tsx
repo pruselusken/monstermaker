@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createMonster } from '@/lib/api';
+import { saveMonster } from '@/lib/api';
 import Link from 'next/link';
 
-export default function CreateMonsterPage() {
+function CreateMonsterContent() {
   const router = useRouter();
   const searchParams = useSearchParams()
   const monsterId = searchParams.get('id')
@@ -94,7 +94,7 @@ export default function CreateMonsterPage() {
     };
 
     try {
-      await createMonster(monster);
+      await saveMonster(monster);
       router.push('/monsters');
     } catch (error) {
       alert('Error creating monster: ' + (error as Error).message);
@@ -331,5 +331,19 @@ export default function CreateMonsterPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function CreateMonsterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#f5f1eb] flex items-center justify-center">
+          <div className="text-[#58180d] text-xl">Loading...</div>
+        </div>
+      }
+    >
+      <CreateMonsterContent />
+    </Suspense>
   );
 }
